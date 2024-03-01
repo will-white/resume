@@ -1,0 +1,8 @@
+/curve-cv
+
+*.aux
+*.fls
+*.log
+*.gz
+*.out
+*.fdb_latexmk
