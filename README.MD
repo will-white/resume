@@ -1,1 +1,13 @@
-sudo docker run -i --rm --name latex -v "$PWD":/usr/src/app -w /usr/src/app registry.gitlab.com/islandoftex/images/texlive:latest pdflatex test.tex
+# Resume
+
+This is repo to store, update/modify, and build my LaTeX based resume
+
+## Installation
+
+Have docker installed prior
+Download repo
+Install latex-workshop
+
+## Usage
+
+Use latex-workshop to run lint, and build.
