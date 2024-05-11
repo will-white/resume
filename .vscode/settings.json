@@ -3,6 +3,7 @@
   "editor.wordWrapColumn": 120,
   "latex-workshop.latex.autoClean.run": "onSucceeded",
   "latex-workshop.latex.clean.subfolder.enabled": true,
+  "latex-workshop.latex.clean.method": "glob",
   "latex-workshop.docker.enabled": true,
   "latex-workshop.docker.image.latex": "ghcr.io/xu-cheng/texlive-full"
 }

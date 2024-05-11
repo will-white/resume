@@ -1,124 +1,119 @@
-%----------------------------------------------------------------------------------------
-%	CLASS CONFIGURATION
-%----------------------------------------------------------------------------------------
+\ProvidesClass{basecv}
 
-\NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{basecv}[Base CV class]
+\LoadClass[11pt,letterpaper]{article} % Font size and paper type
 
-\DeclareOption*{\PassOptionsToClass{\CurrentOption}{extarticle}} % Pass through any options to the base class
-\ProcessOptions\relax % Process given options
+\usepackage[parfill]{parskip} % Remove paragraph indentation
+\usepackage{array} % Required for boldface (\bf and \bfseries) tabular columns
+\usepackage{ifthen} % Required for ifthenelse statements
 
-\LoadClass{extarticle} % Load the base class
-
-%----------------------------------------------------------------------------------------
-%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
-%----------------------------------------------------------------------------------------
-
-\setlength{\parindent}{0mm} % Suppress paragraph indentation
-
-\usepackage[hidelinks]{hyperref} % Required for links but hide the default boxes around links
-
-\pagestyle{empty} % No headers or footers
-
-\usepackage{moresize} % Provides more font size commands (\HUGE and \ssmall)
-\usepackage{enumitem}
-%----------------------------------------------------------------------------------------
-%	PAGE LAYOUT
-%----------------------------------------------------------------------------------------
-
-\usepackage{geometry} % Required for adjusting page dimensions and margins
-
-\geometry{
-    paper=a4paper, % Paper size, change to letterpaper for US letter size
-    top=1.3cm, % Top margin
-    bottom=1.3cm, % Bottom margin
-    left=1.6cm, % Left margin
-    right=1.6cm, % Right margin
-    headheight=0.75cm, % Header height
-    footskip=1cm, % Space from the bottom margin to the baseline of the footer
-    headsep=0.5cm, % Space from the top margin to the baseline of the header
-    % showframe, % Uncomment to show how the type block is set on the page
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=blue,
 }
 
-%----------------------------------------------------------------------------------------
-%	FONTS
-%----------------------------------------------------------------------------------------
-
-\usepackage[utf8]{inputenc} % Required for inputting international characters
-\usepackage[T1]{fontenc} % Output font encoding for international characters
-
-\usepackage[default]{raleway}
-%\usepackage[defaultsans]{droidsans}
-%\usepackage{cmbright}
-
-\renewcommand*\familydefault{\sfdefault} % Force the sans-serif version of any font used
-
-%------------------------------------------------
-
-\usepackage{fontawesome} % Required for FontAwesome icons
-
-% Command to output an icon in a black square box with text to the right
-\newcommand{\icon}[3]{% The first parameter is the FontAwesome icon name, the second is the box size and the third is the text
-    \vcenteredhbox{\colorbox{white}{\makebox(#2, #2){\textcolor{black}{\Large\csname fa#1\endcsname}}}}% Icon and box
-    \hspace{0.1cm}% Whitespace
-    \vcenteredhbox{\textcolor{black}{#3}}% Text
-}
+\pagestyle{empty} % Suppress page numbers
 
 %----------------------------------------------------------------------------------------
-%	GRAPHICS DEFINITIONS
-%---------------------------------------------------------------------------------------- 
-
-\usepackage{tikz} % Required for creating the plots
-\usetikzlibrary{shapes, backgrounds}
-\tikzset{x=1cm, y=1cm} % Default tikz units
-
-% Command to vertically centre adjacent content
-\newcommand{\vcenteredhbox}[1]{% The only parameter is for the content to centre
-    \begingroup%
-    \setbox0=\hbox{#1}\parbox{\wd0}{\box0}%
-    \endgroup%
-}
-
-%----------------------------------------------------------------------------------------
-%	CUSTOM SECTIONS
-%----------------------------------------------------------------------------------------
-\def\Vhrulefill{\leavevmode\leaders\hrule height 0.7ex depth \dimexpr0.4pt-0.7ex\hfill\kern0pt}
-
-% Command to output section title headings
-\newcommand{\cvsect}[1]{% The only parameter is the section text
-    \vspace{\baselineskip} % Whitespace before the section title
-    \textcolor{black}{ \MakeUppercase{\textbf{#1}}} \hspace{4pt} \Vhrulefill \\% Section title
-    % \vspace{2 pt}
-}
-
-%----------------------------------------------------------------------------------------
-%	ENTRY LIST
+%	HEADINGS COMMANDS: Commands for printing name and address
 %----------------------------------------------------------------------------------------
 
-\usepackage{longtable} % Required for tables that span multiple pages
-\setlength{\LTpre}{0pt} % Remove default whitespace before longtable
-\setlength{\LTpost}{0pt} % Remove default whitespace after longtable
+\def \name#1{\def\@name{#1}} % Defines the \name command to set name
+\def \@name {} % Sets \@name to empty by default
 
-\setlength{\tabcolsep}{0pt} % No spacing between table columns
+\def \addressSep {$\diamond$} % Set default address separator to a diamond
 
-% Environment to hold a new list of entries
-\newenvironment{entrylist}{
-    \begin{longtable}[H]{l l}
+% One, two or three address lines can be specified 
+\let \@addressone \relax
+\let \@addresstwo \relax
+\let \@addressthree \relax
+
+% \address command can be used to set the first, second, and third address (last 2 optional)
+\def \address #1{
+    \@ifundefined{@addresstwo}{
+        \def \@addresstwo {#1}
+    }{
+        \@ifundefined{@addressthree}{
+            \def \@addressthree {#1}
         }{
-        \vspace{-24 pt}
-    \end{longtable}
+            \def \@addressone {#1}
+        }}
 }
 
-\newcommand{\entry}[4]{% First argument for the leftmost date(s) text, second is for the bold entry heading, third is for the bold right-aligned entry qualifier and the fourth is for the entry description
-    \parbox[t]{0.15\textwidth}{% 17.5% of the text width of the page
-        \small #1 % Leftmost entry date(s) text
-    }%
-    &\parbox[t]{0.85\textwidth}{% 82.5% of the text width of the page
-        \textbf{#2}% Entry heading text
-        \hfill% Horizontal whitespace
-        {\footnotesize \textbf{\textcolor{black}{#3}}}\\% Right-aligned entry qualifier text
-        #4 % Entry description text
-    }\\\\}
+% \printaddress is used to style an address line (given as input)
+\def \printaddress #1{
+\begingroup
+\def \\ {\addressSep\ }
+\centerline{#1}
+\endgroup
+\par
+\addressskip
+}
 
-% Command to output a separator slash between lists, e.g. '  /  '
-\newcommand{\slashsep}{\hspace{3mm}/\hspace{3mm}}
+% \printname is used to print the name as a page header
+\def \printname {
+    \begingroup
+    \hfil{\MakeUppercase{\namesize\bf \@name}}\hfil
+    \nameskip\break
+    \endgroup
+}
+
+%----------------------------------------------------------------------------------------
+%	PRINT THE HEADING LINES
+%----------------------------------------------------------------------------------------
+
+\let\ori@document=\document
+\renewcommand{\document}{
+    \ori@document  % Begin document
+    \printname % Print the name specified with \name
+    \@ifundefined{@addressone}{}{ % Print the first address if specified
+        \printaddress{\@addressone}}
+    \@ifundefined{@addresstwo}{}{ % Print the second address if specified
+        \printaddress{\@addresstwo}}
+    \@ifundefined{@addressthree}{}{ % Print the third address if specified
+        \printaddress{\@addressthree}}
+}
+
+%----------------------------------------------------------------------------------------
+%	SECTION FORMATTING
+%----------------------------------------------------------------------------------------
+
+% Defines the rSection environment for the large sections within the CV
+\newenvironment{rSection}[1]{ % 1 input argument - section name
+    \sectionskip
+    \MakeUppercase{{\bf #1}} % Section title
+    \sectionlineskip
+    \hrule % Horizontal line
+    \begin{list}{}{ % List for each individual item in the section
+            \setlength{\leftmargin}{0em} % Margin within the section
+        }
+        \item[]
+              }{
+    \end{list}
+}
+
+%----------------------------------------------------------------------------------------
+%	WORK EXPERIENCE FORMATTING
+%----------------------------------------------------------------------------------------
+
+\newenvironment{rSubsection}[4]{ % 4 input arguments - company name, year(s) employed, job title and location
+{\bf #1} \hfill {#2} % Bold company name and date on the right
+\ifthenelse{\equal{#3}{}}{}{ % If the third argument is not specified, don't print the job title and location line
+\\
+{\em #3} \hfill {\em #4} % Italic job title and location
+}\smallskip
+\begin{list}{$\cdot$}{\leftmargin=0em} % \cdot used for bullets, no indentation
+    \itemsep -0.5em \vspace{-0.5em} % Compress items in list together for aesthetics
+    }{
+\end{list}
+\vspace{0.5em} % Some space after the list of bullet points
+}
+
+% The below commands define the whitespace after certain things in the document - they can be \smallskip, \medskip or \bigskip
+\def\namesize{\LARGE} % Size of the name at the top of the document
+\def\addressskip{\smallskip} % The space between the two address (or phone/email) lines
+\def\sectionlineskip{\medskip} % The space above the horizontal line for each section 
+\def\nameskip{\medskip} % The space after your name at the top
+\def\sectionskip{\smallskip} % The space after the heading section
